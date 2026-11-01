@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#183b32">
+<title>Mistr rekonstrukcí – kalkulačka zakázky</title>
+<style>
+:root{--green:#183b32;--green2:#285747;--bg:#f3f5f2;--card:#fff;--text:#18231f;--muted:#63716b;--line:#dce4df;--accent:#e7b95d;--red:#a63832}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.45}
+header{background:var(--green);color:white;padding:22px 18px 20px;border-radius:0 0 22px 22px}
+.brand{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;opacity:.8;font-weight:700}
+h1{font-size:26px;line-height:1.15;margin:7px 0}
+header p{margin:8px 0 0;color:#d9e6df;font-size:14px}
+main{max-width:720px;margin:0 auto;padding:16px 14px 34px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:16px;margin-bottom:13px;box-shadow:0 2px 9px #173a3010}
+h2{font-size:17px;margin:0 0 13px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+label{display:block;font-size:12px;color:var(--muted);font-weight:650;margin-bottom:5px}
+input,select,textarea{width:100%;font:inherit;font-size:16px;padding:12px;border:1px solid #cbd6cf;border-radius:10px;background:#fff;color:var(--text);min-width:0}
+input:focus,select:focus,textarea:focus{outline:2px solid #86b49c;border-color:var(--green2)}
+.field{margin-bottom:11px}
+.full{grid-column:1/-1}
+button{font:inherit;font-weight:750;border:0;border-radius:11px;padding:13px 15px;cursor:pointer}
+.primary{background:var(--green);color:#fff;width:100%}
+.secondary{background:#e8eee9;color:var(--green);width:100%}
+.buttons{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
+.result{background:var(--green);color:white;border-radius:16px;padding:17px}
+.result .small{color:#d7e4dc;font-size:12px}
+.money{font-size:29px;font-weight:800;letter-spacing:-.5px;margin:3px 0 12px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.stat{background:#ffffff16;border-radius:10px;padding:10px}
+.stat b{display:block;font-size:17px}
+.stat span{font-size:11px;color:#d7e4dc}
+.note{font-size:12px;color:var(--muted)}
+.pill{display:inline-block;background:#e8eee9;color:var(--green);font-size:11px;padding:4px 8px;border-radius:20px;font-weight:700}
+hr{border:0;border-top:1px solid var(--line);margin:14px 0}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:8px 10px 24px}
+@media(max-width:370px){.grid{grid-template-columns:1fr}.full{grid-column:auto}.buttons{grid-template-columns:1fr}.money{font-size:25px}}
+@media print{body{background:white}header{border-radius:0;padding:12px}.no-print,button{display:none!important}main{padding:8px}.card{box-shadow:none;break-inside:avoid}.result{color:#000;background:#eee}.result .small,.stat span{color:#333}.stat{background:#fff;border:1px solid #ccc}.money{font-size:24px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">Praktický nástroj pro živnostníky</div>
+  <h1>Mistr rekonstrukcí</h1>
+  <p>Kalkulačka zakázky • cena, náklady a orientační výsledek</p>
+</header>
+<main>
+  <section class="card">
+    <h2>1. Údaje o zakázce</h2>
+    <div class="field"><label for="job">Název zakázky</label><input id="job" placeholder="Např. Koupelna – Novák" autocomplete="off"></div>
+    <div class="field"><label for="type">Druh práce</label>
+      <select id="type">
+        <option>Obklady a dlažby</option><option>Zednické práce</option><option>Malování</option>
+        <option>Sádrokarton</option><option>Kompletní rekonstrukce</option><option>Jiná práce</option>
+      </select>
+    </div>
+    <div class="grid">
+      <div class="field"><label for="qty">Množství (m² / ks)</label><input id="qty" type="number" min="0" step="0.1" value="30" inputmode="decimal"></div>
+      <div class="field"><label for="unit">Jednotka</label><select id="unit"><option>m²</option><option>ks</option><option>bm</option><option>hod.</option><option>zakázka</option></select></div>
+      <div class="field"><label for="rate">Cena práce za jednotku (Kč)</label><input id="rate" type="number" min="0" step="1" value="650" inputmode="decimal"></div>
+      <div class="field"><label for="extra">Další účtované práce (Kč)</label><input id="extra" type="number" min="0" step="1" value="0" inputmode="decimal"></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>2. Náklady a čas</h2>
+    <div class="grid">
+      <div class="field"><label for="materials">Materiál hrazený tebou (Kč)</label><input id="materials" type="number" min="0" step="1" value="3500" inputmode="decimal"></div>
+      <div class="field"><label for="travel">Doprava a parkování (Kč)</label><input id="travel" type="number" min="0" step="1" value="500" inputmode="decimal"></div>
+      <div class="field"><label for="other">Ostatní náklady (Kč)</label><input id="other" type="number" min="0" step="1" value="0" inputmode="decimal"></div>
+      <div class="field"><label for="hours">Tvoje pracovní hodiny</label><input id="hours" type="number" min="0" step="0.5" value="24" inputmode="decimal"></div>
+      <div class="field full"><label for="hourvalue">Kolik chceš započítat za hodinu své práce (Kč)</label><input id="hourvalue" type="number" min="0" step="10" value="300" inputmode="decimal"></div>
+    </div>
+    <p class="note">Hodinová sazba tvé práce slouží k posouzení, zda se zakázka vyplatí. Není to automaticky další výdaj, který platíš někomu jinému.</p>
+  </section>
+
+  <section class="result" aria-live="polite">
+    <div class="small">Navržená cena zákazníkovi (bez případných daní)</div>
+    <div class="money" id="revenue">19 500 Kč</div>
+    <div class="stats">
+      <div class="stat"><span>Přímé náklady</span><b id="direct">4 000 Kč</b></div>
+      <div class="stat"><span>Hodnota tvého času</span><b id="labour">7 200 Kč</b></div>
+      <div class="stat"><span>Zbývá po přímých nákladech</span><b id="left">15 500 Kč</b></div>
+      <div class="stat"><span>Po odečtení času</span><b id="profit">8 300 Kč</b></div>
+    </div>
+    <hr style="border-color:#ffffff35">
+    <div class="small" id="margin">Orientační zůstatek po započtení hodnoty času: 42,6 % z ceny.</div>
+  </section>
+
+  <section class="card">
+    <h2>3. Cenová nabídka</h2>
+    <div class="field"><label for="customer">Zákazník (volitelné)</label><input id="customer" placeholder="Jméno zákazníka"></div>
+    <div class="field"><label for="details">Poznámka a rozsah práce</label><textarea id="details" rows="3" placeholder="Co je v ceně, co není v ceně, termín…"></textarea></div>
+    <div class="buttons">
+      <button class="primary" id="print">Tisk / uložit jako PDF</button>
+      <button class="secondary" id="save">Uložit výpočet v tomto zařízení</button>
+    </div>
+    <div class="buttons">
+      <button class="secondary" id="load">Načíst uložený výpočet</button>
+      <button class="secondary" id="reset">Vrátit výchozí hodnoty</button>
+    </div>
+    <p class="note">Ukládání je pouze v tomto prohlížeči a zařízení. Zatím se data nesynchronizují do cloudu.</p>
+  </section>
+  <section class="card">
+    <span class="pill">První prototyp</span>
+    <p class="note">Výpočet je orientační pomůcka, nikoliv účetní nebo daňový výpočet. Nezahrnuje automaticky odvody, daň, reklamace, neplacený čas ani všechny režijní náklady. Před odesláním nabídky zkontroluj rozsah, jednotky a cenu.</p>
+  </section>
+</main>
+<footer>Mistr rekonstrukcí • Pracovní prototyp • Vytvořeno pro mobilní použití</footer>
+<script>
+const ids=['job','type','qty','unit','rate','extra','materials','travel','other','hours','hourvalue','customer','details'];
+const $=id=>document.getElementById(id);
+const num=id=>Math.max(0,Number($(id).value)||0);
+const money=n=>Math.round(n).toLocaleString('cs-CZ')+' Kč';
+function calculate(){
+ const revenue=num('qty')*num('rate')+num('extra');
+ const direct=num('materials')+num('travel')+num('other');
+ const labour=num('hours')*num('hourvalue');
+ const left=revenue-direct, profit=left-labour;
+ $('revenue').textContent=money(revenue);$('direct').textContent=money(direct);
+ $('labour').textContent=money(labour);$('left').textContent=money(left);
+ $('profit').textContent=money(profit);
+ $('margin').textContent='Orientační zůstatek po započtení hodnoty času: '+(revenue>0?(profit/revenue*100).toLocaleString('cs-CZ',{maximumFractionDigits:1}):'0')+' % z ceny.';
+ document.title=($('job').value.trim()||'Kalkulačka zakázky')+' – Mistr rekonstrukcí';
+}
+ids.forEach(id=>$(id).addEventListener('input',calculate));
+$('print').addEventListener('click',()=>{calculate();window.print()});
+$('save').addEventListener('click',()=>{
+ try{localStorage.setItem('mistr-rekonstrukci-v1',JSON.stringify(Object.fromEntries(ids.map(id=>[id,$(id).value]))));alert('Výpočet uložen v tomto prohlížeči.');}
+ catch(e){alert('Uložení není v tomto prohlížeči dostupné.');}
+});
+$('load').addEventListener('click',()=>{
+ try{const d=JSON.parse(localStorage.getItem('mistr-rekonstrukci-v1')||'null');if(!d){alert('Zatím není uložen žádný výpočet.');return;}ids.forEach(id=>{if(d[id]!==undefined)$(id).value=d[id]});calculate();alert('Uložený výpočet načten.');}
+ catch(e){alert('Uložený výpočet se nepodařilo načíst.');}
+});
+$('reset').addEventListener('click',()=>{
+ if(!confirm('Vrátit formulář na výchozí hodnoty?'))return;
+ $('job').value='';$('type').selectedIndex=0;$('qty').value='30';$('unit').value='m²';$('rate').value='650';$('extra').value='0';
+ $('materials').value='3500';$('travel').value='500';$('other').value='0';$('hours').value='24';$('hourvalue').value='300';$('customer').value='';$('details').value='';calculate();
+});
+calculate();
+</script>
+</body>
+</html>
